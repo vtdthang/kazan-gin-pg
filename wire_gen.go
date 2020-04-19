@@ -7,6 +7,7 @@ package main
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/vtdthang/kazan-gin-pg/order"
 	"github.com/vtdthang/kazan-gin-pg/product"
 )
 
@@ -21,4 +22,11 @@ func InitProductAPI(db *gorm.DB) product.ProductAPI {
 	productService := product.ProvideProductService(productRepository)
 	productAPI := product.ProvideProductAPI(productService)
 	return productAPI
+}
+
+func InitOrderAPI(db *gorm.DB) order.OrderAPI {
+	orderRepository := order.ProvideOrderRepository(db)
+	orderSerive := order.ProvideOrderService(orderRepository)
+	orderAPI := order.ProvideOrderAPI(orderSerive)
+	return orderAPI
 }

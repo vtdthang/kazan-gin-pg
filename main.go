@@ -7,7 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
-	"github.com/vtdthang/kazan-gin-pg/product"
+	"github.com/vtdthang/kazan-gin-pg/entities"
 	router "github.com/vtdthang/kazan-gin-pg/routers"
 )
 
@@ -22,7 +22,8 @@ func initDB() *gorm.DB {
 		panic(err)
 	}
 
-	db.AutoMigrate(&product.Product{})
+	db.AutoMigrate(&entities.Category{}, &entities.Product{}, &entities.Order{}, &entities.User{}, &entities.OrderDetail{})
+	db.Model(&entities.Product{}).AddForeignKey("category_id", "categories(id)", "RESTRICT", "RESTRICT")
 
 	return db
 }
@@ -32,11 +33,12 @@ func main() {
 	defer db.Close()
 
 	productAPI := InitProductAPI(db)
+	orderAPI := InitOrderAPI(db)
 
 	r := gin.Default()
 
 	router.PrepareProductRoutes(r, productAPI)
-	router.PrepareUserRoutes(r)
+	router.PrepareOrderRoutes(r, orderAPI)
 
 	err := r.Run()
 	if err != nil {
